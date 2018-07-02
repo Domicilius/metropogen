@@ -5,7 +5,7 @@ Metropogen is (will be) a Python-based application to model the actions of
 a populace in a fantasy city. It is intended to be used to create snapshot 
 descriptions and not to model long-term behaviors and consequences (yet).
 
-Planned features:
+### Planned features:
 
     - Multi-layer (aristocratic, infrastructure, crime, government, etc)
         description of actions over a 24-hour period
@@ -20,7 +20,7 @@ Planned features:
 
     - output to text file in useful format
 
-Stretch Goals:
+### Stretch Goals:
 
     - read in user landmarks and use them at runtime
 
