@@ -1,9 +1,11 @@
 # Metropogen
 Copyright (c) 2018 Theodore Mason
 
-Metropogen is (will be) a Python-based application to model the actions of 
+Metropogen is (will be) a Rust-based application to model the actions of 
 a populace in a fantasy city. It is intended to be used to create snapshot 
-descriptions and not to model long-term behaviors and consequences (yet).
+descriptions and not to model long-term behaviors and consequences (yet). 
+The primary use of the application is intended to be realistic descriptions
+for use in tabletop roleplaying games.
 
 ### Planned features:
 
