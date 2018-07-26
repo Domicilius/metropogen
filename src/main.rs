@@ -4,7 +4,7 @@ use rand::prelude::*;
 /// Choose one of choices[] based on corresponding weight
 // Idea is to pick randomly from a list of choices but make the "random"
 // have more of a tendency to pick some choices from others.
-fn weighted_choice(choices: Vec<&str>, weights: Vec<i32>) {
+fn weighted_choice(choices: Vec<&str>, weights: Vec<i32>) -> &str {
     // If there isn't a weight for every choice, crash
     assert_eq!(choices.len(), weights.len());
 
@@ -23,14 +23,15 @@ fn weighted_choice(choices: Vec<&str>, weights: Vec<i32>) {
     
     // use rand to pick one from our new list
     let mut rng = thread_rng();
-    println!("Choosing one of {:?} using {:?} weights.", choices, weights);
-    println!("{}", weighted_choices[rng.gen_range(0, 100)]);
+//    println!("{}", weighted_choices[rng.gen_range(0, 100)]);
+    weighted_choices[rng.gen_range(0, 100)]
 }
 
 fn main() {
+/*
     let choices = vec!["red", "blue", "yellow"];
     let weights = vec![1, 1, 98];
 
-    weighted_choice(choices, weights);
-
+    println!("{}", weighted_choice(choices, weights));
+*/
 }
