@@ -1,4 +1,10 @@
 extern crate rand;
+extern crate serde;
+extern crate serde_yaml;
+extern crate serde_derive;
+use std::env;
+use std::fs::File;
+use std::io::prelude::*;
 use rand::prelude::*;
 
 /// Choose one of choices[] based on corresponding weight
@@ -28,10 +34,16 @@ fn weighted_choice(choices: Vec<&str>, weights: Vec<i32>) -> &str {
 }
 
 fn main() {
-/*
-    let choices = vec!["red", "blue", "yellow"];
-    let weights = vec![1, 1, 98];
+    // read in file in hopefully-good json format
+//    let mut file = File::open("config.yaml").unwrap();
+//    let mut data = String::new();
+//    file.read_to_string(&mut data);
 
-    println!("{}", weighted_choice(choices, weights));
-*/
+//    let yaml: String = serde_yaml::from_str(&data).unwrap();
+
+//    let mut contents = String::new();
+//    file.read_to_string(&mut contents);
+
+//    println!("{:?}", yaml);
+
 }
