@@ -1,0 +1,21 @@
+{
+    "name": "Tavern",
+    "events": [
+        {
+            "shortdesc": "Local thieves rob the place.",
+            "layer": "crime",
+            "exclusive": "yes",
+            "time_of_day": ["Midnight", "LateNight"],
+            "longimpact": "The thieves are mostly looking for easy coins or valuables. They do not peek into rooms or otherwise bother patrons, but they do ransack the front desk and snag anything left in the common room.",
+            "rarity": "Uncommon"
+        },
+        {
+            "shortdesc": "Grumpy adventurers return from a hard day.",
+            "layer": "heroes",
+            "exclusive": "no",
+            "time_of_day": ["LateDay", "Dusk", "EarlyNight"],
+            "longimpact": "The adventurers may have lost a member or merely expended a lot of resources with little payoff. They will be quick to anger and start arguments, but will not push the issue much beyond posturing immediately. They might start a real fight later, depending on what is said.",
+            "rarity": "Uncommon"
+        }
+    ]
+}

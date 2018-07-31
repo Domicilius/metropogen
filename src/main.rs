@@ -1,16 +1,59 @@
 extern crate rand;
 extern crate serde;
-extern crate serde_yaml;
+extern crate serde_json;
+
+#[macro_use]
 extern crate serde_derive;
-use std::env;
+
+//use std::env;
 use std::fs::File;
-use std::io::prelude::*;
+//use std::io::prelude::*;
 use rand::prelude::*;
+//use serde_json::*;
+
+#[derive(Serialize, Deserialize, Debug)]
+enum RarityValue {
+    Ordinary,
+    Common,
+    Uncommon,
+    Rare,
+    Extraordinary,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+enum Timezone {
+    Dawn,
+    EarlyDay,
+    Noon,
+    LateDay,
+    Dusk,
+    EarlyNight,
+    Midnight,
+    LateNight,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct Event {
+    shortdesc: String,
+    layer: String,
+    exclusive: String,
+    time_of_day: Vec<Timezone>,
+    longimpact: String,
+    rarity: RarityValue
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct Landmark {
+    name: String,
+    events: Vec<Event>,
+
+}
 
 /// Choose one of choices[] based on corresponding weight
-// Idea is to pick randomly from a list of choices but make the "random"
-// have more of a tendency to pick some choices from others.
 fn weighted_choice(choices: Vec<&str>, weights: Vec<i32>) -> &str {
+    // Idea is to pick randomly from a list of choices but make the "random"
+    // have more of a tendency to pick some choices from others.
+    
     // If there isn't a weight for every choice, crash
     assert_eq!(choices.len(), weights.len());
 
@@ -29,21 +72,15 @@ fn weighted_choice(choices: Vec<&str>, weights: Vec<i32>) -> &str {
     
     // use rand to pick one from our new list
     let mut rng = thread_rng();
-//    println!("{}", weighted_choices[rng.gen_range(0, 100)]);
     weighted_choices[rng.gen_range(0, 100)]
 }
 
 fn main() {
     // read in file in hopefully-good json format
-//    let mut file = File::open("config.yaml").unwrap();
-//    let mut data = String::new();
-//    file.read_to_string(&mut data);
+    let file = File::open("config.json").unwrap();
 
-//    let yaml: String = serde_yaml::from_str(&data).unwrap();
+    let json: Landmark = serde_json::from_reader(file).unwrap();
 
-//    let mut contents = String::new();
-//    file.read_to_string(&mut contents);
-
-//    println!("{:?}", yaml);
+    println!("{:?}", json);
 
 }
