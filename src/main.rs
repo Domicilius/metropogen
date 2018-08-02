@@ -168,7 +168,7 @@ impl fmt::Display for Event {
                         when = "11PM";
                     },
                     3 => {
-                        when = "12PM";
+                        when = "12AM";
                     }
                     _ => {
                         when = "MidNight";
@@ -193,7 +193,7 @@ impl fmt::Display for Event {
                 }
             },
         }
-	    write!(f, "[{}]\n\tLayer: {}\n\tWhen: {}\n\tDesc: {}", self.shortdesc, self.layer, when, self.longimpact)
+	    write!(f, "[Event]\t{}\n[Layer]\t{}\n[When]\t{}\n[Desc]\t{}", self.shortdesc, self.layer, when, self.longimpact)
     }
 
 }
@@ -204,6 +204,19 @@ struct Landmark {
     name: String,
     events: Vec<Event>,
 
+}
+
+impl fmt::Display for Landmark {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+   
+        write!(f, "[Name]\t{}\n============================\n\n", self.name);
+        for i in &self.events {
+            write!(f, "{}\n\n", i);
+        }
+    
+
+	    write!(f, "")
+    }
 }
     
 
@@ -239,6 +252,6 @@ fn main() {
 
     let json: Landmark = serde_json::from_reader(file).unwrap();
 
-    println!("{:?}", json);
+    println!("{}", json);
 
 }
