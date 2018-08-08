@@ -111,16 +111,67 @@ impl PartialEq for Timezone {
         self.value() == other.value()
     }
 }
+
 // Make a struct to handle the structure of a read-in event from JSON.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Eq)]
 struct Event {
     shortdesc: String, //           "What's happening w/ this event"
-    layer: String, //               The category of event occuring
-    exclusive: String, //           Whether or not multiple events of this
-                                //  type can occur at the same time-region
     time_of_day: Vec<Timezone>, //  What time-region of the day it occurs
     longimpact: String, //          The long version of what's happening
     rarity: RarityValue //          How likely the event is to occur
+    
+    // TO IMPLEMENT
+    //layer: String, //               The category of event occuring
+    //exclusive: String, //           Whether or not multiple events of this
+                                //  type can occur at the same time-region
+}
+
+impl Event {
+    pub fn get_time(&self) -> &Timezone {
+        &self.time_of_day[0]
+    }
+
+    pub fn get_shortdesc(&self) -> &String {
+        &self.shortdesc
+    }
+
+    pub fn chance_happens(&self) -> &bool {
+        match self.rarity {
+            RarityValue::Ordinary => {
+ 				return weighted_choice([&true, &false].to_vec(), [34, 66].to_vec());
+            }
+            RarityValue::Common => {
+ 				return weighted_choice([&true, &false].to_vec(), [20, 80].to_vec());
+            }
+            RarityValue::Uncommon => {
+ 				return weighted_choice([&true, &false].to_vec(), [10, 90].to_vec());
+            }
+            RarityValue::Rare => {
+ 				return weighted_choice([&true, &false].to_vec(), [5, 95].to_vec());
+            }
+            RarityValue::Extraordinary => {
+ 				return weighted_choice([&true, &false].to_vec(), [1, 99].to_vec());
+            }
+        }
+    }
+}
+
+impl Ord for Event {
+    fn cmp(&self, other: &Event)-> Ordering {
+        self.time_of_day[0].cmp(&other.time_of_day[0])
+    }
+}
+
+impl PartialOrd for Event {
+    fn partial_cmp(&self, other: &Event) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for Event {
+    fn eq(&self, other: &Event) -> bool {
+        self.time_of_day[0] == other.time_of_day[0]
+    }
 }
 
 impl fmt::Display for Event {
@@ -279,7 +330,7 @@ impl fmt::Display for Event {
         }
         // Output the event in a formatted manner that makes it easy to
         // read.
-	    write!(f, "[Event]\t{}\n[Layer]\t{}\n[When]\t{}\n[Desc]\t{}", self.shortdesc, self.layer, when, self.longimpact)
+	    write!(f, "[Event]\t{}\n[When]\t{}\n[Desc]\t{}", self.shortdesc, when, self.longimpact)
     }
 }
 
@@ -310,20 +361,6 @@ impl fmt::Display for Landmark {
 	    write!(f, "")
     }
 }
-
-/*
-impl Landmark {
-    pub fn dayGen(&self) {
-        let mut 
-        for i in self.events {
-                
-
-
-    }
-
-
-}
-  */  
 
 /// Choose one of choices[] based on corresponding weight
 fn weighted_choice<T>(choices: Vec<&T>, weights: Vec<i32>) -> &T {
@@ -357,8 +394,8 @@ fn main() {
 
     let mut json: Landmark = serde_json::from_reader(file).unwrap();
     
-    json.events[1].time_of_day.sort();
+    json.events.sort();
 
-    println!("{:?}", json.events[1].time_of_day);
+    println!("{:?}", json.events);
 
 }
