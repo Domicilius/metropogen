@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+#![allow(unused_must_use)]
 extern crate rand;
 extern crate serde;
 extern crate serde_json;
@@ -6,13 +8,16 @@ extern crate serde_json;
 extern crate serde_derive;
 
 use std::fmt;
+use std::cmp::Ordering;
 //use std::env;
 use std::fs::File;
 //use std::io::prelude::*;
 use rand::prelude::*;
 //use serde_json::*;
 
-#[derive(Serialize, Deserialize, Debug)]
+// Make a standardized rarity structure so we can easily compare
+// and handle events of different rarity levels
+#[derive(Serialize, Deserialize, Debug, Eq)]
 enum RarityValue {
     Ordinary,       // corresponds to   34  in 100
     Common,         // corresponds to   20  in 100
@@ -21,7 +26,45 @@ enum RarityValue {
     Extraordinary,  // corresponds to   1   in 100
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+// Returning values of enums code heavily inspired by:
+// https://stackoverflow.com/questions/36928569/enums-with-constant-values-in-rust
+// by Huon and Shepmaster, among others.
+impl RarityValue {
+    fn value(&self) -> i32 {
+        match *self {
+            RarityValue::Ordinary => 1,
+            RarityValue::Common => 2,
+            RarityValue::Uncommon => 3,
+            RarityValue::Rare => 4,
+            RarityValue::Extraordinary => 5,
+        }
+    }
+}
+
+impl Ord for RarityValue {
+    fn cmp(&self, other: &RarityValue) -> Ordering {
+        self.value().cmp(&other.value())
+    }
+}
+
+impl PartialOrd for RarityValue {
+    fn partial_cmp(&self, other: &RarityValue) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for RarityValue {
+    fn eq(&self, other: &RarityValue) -> bool {
+        self.value() == other.value()
+    }
+}
+
+// Make a standardized way to handle times of the day. We care more about
+// what relative time-region of the day the event occurs in than the 
+// absolute time of the event, to the point where the absolute itme is 
+// basically an afterthought. Names of the relative regions are not quite
+// accurate, but accurate enough to be usable.
+#[derive(Serialize, Deserialize, Debug, Eq)]
 enum Timezone {
     Morning,    // Morning      corresponds to 4AM  5AM  6AM
     EarlyDay,   // EarlyDay     corresponds to 7AM  8AM  9AM
@@ -33,14 +76,51 @@ enum Timezone {
     LateNight,  // LateNight    corresponds to 1AM  2AM  3AM
 }
 
+// Returning values of enums code heavily inspired by:
+// https://stackoverflow.com/questions/36928569/enums-with-constant-values-in-rust
+// by Huon and Shepmaster, among others.
+impl Timezone {
+    fn value(&self) -> i32 {
+        match *self {
+            Timezone::Morning => 1,
+            Timezone::EarlyDay => 2,
+            Timezone::MidDay => 3,
+            Timezone::LateDay => 4,
+            Timezone::Evening => 5,
+            Timezone::EarlyNight => 6,
+            Timezone::MidNight => 7,
+            Timezone::LateNight => 8,
+        }
+    }
+}
+
+impl Ord for Timezone {
+    fn cmp(&self, other: &Timezone) -> Ordering {
+        self.value().cmp(&other.value())
+    }
+}
+
+impl PartialOrd for Timezone {
+    fn partial_cmp(&self, other: &Timezone) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for Timezone {
+    fn eq(&self, other: &Timezone) -> bool {
+        self.value() == other.value()
+    }
+}
+// Make a struct to handle the structure of a read-in event from JSON.
 #[derive(Serialize, Deserialize, Debug)]
 struct Event {
-    shortdesc: String,
-    layer: String,
-    exclusive: String,
-    time_of_day: Vec<Timezone>,
-    longimpact: String,
-    rarity: RarityValue
+    shortdesc: String, //           "What's happening w/ this event"
+    layer: String, //               The category of event occuring
+    exclusive: String, //           Whether or not multiple events of this
+                                //  type can occur at the same time-region
+    time_of_day: Vec<Timezone>, //  What time-region of the day it occurs
+    longimpact: String, //          The long version of what's happening
+    rarity: RarityValue //          How likely the event is to occur
 }
 
 impl fmt::Display for Event {
@@ -54,6 +134,10 @@ impl fmt::Display for Event {
         let mut rng = thread_rng();
         let when;         
         
+
+        // Figure out what hour of the day the event occurs based on its
+        // time-region. Mostly important for display purposes (which is
+        // why we're only figuring it out now!)
         match self.time_of_day[rng.gen_range(0, self.time_of_day.len())] {
             Timezone::Morning => {
                 let choice = rng.gen_range(1, 4);
@@ -193,12 +277,16 @@ impl fmt::Display for Event {
                 }
             },
         }
+        // Output the event in a formatted manner that makes it easy to
+        // read.
 	    write!(f, "[Event]\t{}\n[Layer]\t{}\n[When]\t{}\n[Desc]\t{}", self.shortdesc, self.layer, when, self.longimpact)
     }
-
 }
 
-
+// Make an organized structure to hold the information about a read-in 
+// landmark. Only really need name, location, and list of events, but
+// more pieces can be added (owner or associated faction, primary layer,
+// etc)
 #[derive(Serialize, Deserialize, Debug)]
 struct Landmark {
     name: String,
@@ -208,20 +296,37 @@ struct Landmark {
 
 impl fmt::Display for Landmark {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-   
+        // Output a Landmark in a formatted and easy to read style
+
+        // Start with the header and name
         write!(f, "[Name]\t{}\n============================\n\n", self.name);
+
+        // Print each of the possible events of the landmark
         for i in &self.events {
             write!(f, "{}\n\n", i);
         }
-    
 
+        // return the fmt::Result
 	    write!(f, "")
     }
 }
-    
+
+/*
+impl Landmark {
+    pub fn dayGen(&self) {
+        let mut 
+        for i in self.events {
+                
+
+
+    }
+
+
+}
+  */  
 
 /// Choose one of choices[] based on corresponding weight
-fn weighted_choice(choices: Vec<&str>, weights: Vec<i32>) -> &str {
+fn weighted_choice<T>(choices: Vec<&T>, weights: Vec<i32>) -> &T {
     // Idea is to pick randomly from a list of choices but make the "random"
     // have more of a tendency to pick some choices from others.
     
@@ -250,8 +355,10 @@ fn main() {
     // read in file in hopefully-good json format
     let file = File::open("config.json").unwrap();
 
-    let json: Landmark = serde_json::from_reader(file).unwrap();
+    let mut json: Landmark = serde_json::from_reader(file).unwrap();
+    
+    json.events[1].time_of_day.sort();
 
-    println!("{}", json);
+    println!("{:?}", json.events[1].time_of_day);
 
 }
