@@ -64,7 +64,7 @@ impl PartialEq for RarityValue {
 // absolute time of the event, to the point where the absolute itme is 
 // basically an afterthought. Names of the relative regions are not quite
 // accurate, but accurate enough to be usable.
-#[derive(Serialize, Deserialize, Debug, Eq)]
+#[derive(Serialize, Deserialize, Debug, Eq, Copy, Clone)]
 enum Timezone {
     Morning,    // Morning      corresponds to 4AM  5AM  6AM
     EarlyDay,   // EarlyDay     corresponds to 7AM  8AM  9AM
@@ -92,8 +92,27 @@ impl Timezone {
             Timezone::LateNight => 8,
         }
     }
+
+    fn string(&self) -> &str {
+        match *self {
+            Timezone::Morning => "Morning",
+            Timezone::EarlyDay => "EarlyDay",
+            Timezone::MidDay => "MidDay",
+            Timezone::LateDay => "LateDay",
+            Timezone::Evening => "Evening",
+            Timezone::EarlyNight => "EarlyNight",
+            Timezone::MidNight => "MidNight",
+            Timezone::LateNight => "LateNight",
+        }
+    }
+
 }
 
+impl fmt::Display for Timezone {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.string())
+    }
+}
 impl Ord for Timezone {
     fn cmp(&self, other: &Timezone) -> Ordering {
         self.value().cmp(&other.value())
@@ -153,6 +172,10 @@ impl Event {
  				return weighted_choice([&true, &false].to_vec(), [1, 99].to_vec());
             }
         }
+    }
+
+    pub fn daygen(&self, giventime: Timezone) -> bool {
+        ((self.chance_happens() == &true) && (self.time_of_day.contains(&giventime)))
     }
 }
 
@@ -330,7 +353,7 @@ impl fmt::Display for Event {
         }
         // Output the event in a formatted manner that makes it easy to
         // read.
-	    write!(f, "[Event]\t{}\n[When]\t{}\n[Desc]\t{}", self.shortdesc, when, self.longimpact)
+	    write!(f, "[Event]    {}\n[When]    {}\n[Desc]    {}", self.shortdesc, when, self.longimpact)
     }
 }
 
@@ -350,7 +373,7 @@ impl fmt::Display for Landmark {
         // Output a Landmark in a formatted and easy to read style
 
         // Start with the header and name
-        write!(f, "[Name]\t{}\n============================\n\n", self.name);
+        write!(f, "[Name]    {}\n============================\n\n", self.name);
 
         // Print each of the possible events of the landmark
         for i in &self.events {
@@ -359,6 +382,53 @@ impl fmt::Display for Landmark {
 
         // return the fmt::Result
 	    write!(f, "")
+    }
+}
+
+impl Landmark {
+    pub fn daygen(&self, giventime: Timezone) {
+        for i in &self.events {
+            let printer: bool = i.daygen(giventime);
+            if printer {
+                println!("  [{}] \t| [{}] \t| [{}]", giventime, self.name, i.shortdesc);
+            }
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct City {
+    name: String,
+    landmarks: Vec<Landmark>,
+}
+
+impl City {
+    fn daygen(&self) {
+        println!("[{}]", self.name);
+        for i in &self.landmarks {
+            i.daygen(Timezone::Morning);
+        }
+        for i in &self.landmarks {
+            i.daygen(Timezone::EarlyDay);
+        }
+        for i in &self.landmarks {
+            i.daygen(Timezone::MidDay);
+        }
+        for i in &self.landmarks {
+            i.daygen(Timezone::LateDay);
+        }
+        for i in &self.landmarks {
+            i.daygen(Timezone::Evening);
+        }
+        for i in &self.landmarks {
+            i.daygen(Timezone::EarlyNight);
+        }
+        for i in &self.landmarks {
+            i.daygen(Timezone::MidNight);
+        }
+        for i in &self.landmarks {
+            i.daygen(Timezone::LateNight);
+        }
     }
 }
 
@@ -392,10 +462,8 @@ fn main() {
     // read in file in hopefully-good json format
     let file = File::open("config.json").unwrap();
 
-    let mut json: Landmark = serde_json::from_reader(file).unwrap();
+    let json: City = serde_json::from_reader(file).unwrap();
+
+    json.daygen();
     
-    json.events.sort();
-
-    println!("{:?}", json.events);
-
 }
