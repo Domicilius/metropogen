@@ -9,7 +9,7 @@ extern crate serde_derive;
 
 use std::fmt;
 use std::cmp::Ordering;
-//use std::env;
+use std::env;
 use std::fs::File;
 //use std::io::prelude::*;
 use rand::prelude::*;
@@ -136,7 +136,10 @@ impl PartialEq for Timezone {
 struct Event {
     shortdesc: String, //           "What's happening w/ this event"
     time_of_day: Vec<Timezone>, //  What time-region of the day it occurs
-    longimpact: String, //          The long version of what's happening
+    
+    // TODO: Add in meaningful longimpact support. longimpact works as is
+    // but is unused in the MVP.
+    //longimpact: String, //          The long version of what's happening
     rarity: RarityValue //          How likely the event is to occur
     
     // TO IMPLEMENT
@@ -353,7 +356,7 @@ impl fmt::Display for Event {
         }
         // Output the event in a formatted manner that makes it easy to
         // read.
-	    write!(f, "[Event]    {}\n[When]    {}\n[Desc]    {}", self.shortdesc, when, self.longimpact)
+	    write!(f, "[Event]    {}\n[When]    {}", self.shortdesc, when)
     }
 }
 
@@ -459,11 +462,17 @@ fn weighted_choice<T>(choices: Vec<&T>, weights: Vec<i32>) -> &T {
 }
 
 fn main() {
+    
+    // figure out where our config file is
+    let mut configfile = String::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+    configfile.push_str("/src/config.json");
+
     // read in file in hopefully-good json format
-    let file = File::open("config.json").unwrap();
+    let file = File::open(configfile).unwrap();
 
     let json: City = serde_json::from_reader(file).unwrap();
 
+    // process the read-in information
     json.daygen();
-    
+
 }
