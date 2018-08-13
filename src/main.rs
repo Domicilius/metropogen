@@ -3,6 +3,7 @@
 extern crate rand;
 extern crate serde;
 extern crate serde_json;
+extern crate clap;
 
 #[macro_use]
 extern crate serde_derive;
@@ -11,9 +12,8 @@ use std::fmt;
 use std::cmp::Ordering;
 use std::env;
 use std::fs::File;
-//use std::io::prelude::*;
 use rand::prelude::*;
-//use serde_json::*;
+use clap::{Arg, App};
 
 // Make a standardized way to handle times of the day. We care more about
 // what relative time-region of the day the event occurs in than the 
@@ -448,11 +448,36 @@ fn weighted_choice<T>(choices: Vec<&T>, weights: Vec<i32>) -> &T {
 }
 
 fn main() {
-    
-    // For using the default file: "src/config.json" 
+
+	// Set default file to be used if user does not pass in a config file. This file
+	// is stored in src/config.json, but user could be running program from anywhere,
+	// so we need to create a relative path based off the source directory of metropogen	
+	let cargomanifestdir = env!("CARGO_MANIFEST_DIR");
+	env::set_current_dir(cargomanifestdir);
+
+	// For using the default file: "src/config.json" 
     // we first need to figure out where our config file is
-    let mut configfile = String::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-    configfile.push_str("/src/config.json");
+    let defaultconfigfile = "src/config.json";
+    
+	// command line argument parsing structure derived from example in clap's crate documentation
+    // found on their github here: https://github.com/clap-rs/clap
+    let matches = App::new("Metropogen")
+                          .version("1.0")
+                          .author("Theodore Mason <mason.theodorej@gmail.com>")
+                          .about("Generate 24hr of random events based on user inputfiles")
+                          .arg(Arg::with_name("INPUT")
+							   .short("f")
+							   .long("file")
+							   .value_name("FILE")
+                               .help("Identify input file if not using default")
+                               .required(false)
+							   .takes_value(true))
+                          .arg(Arg::with_name("v")
+                               .short("v")
+                               .help("Set verbose output to true"))
+                          .get_matches();
+
+	let configfile = matches.value_of("config").unwrap_or(&defaultconfigfile);
 
     // read in file in hopefully-good json format
     let file = File::open(configfile).unwrap();
