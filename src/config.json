@@ -2,22 +2,31 @@
     "name": "Townsville",
     "landmarks": [
         {
-            "name": "Tavern",
+            "name": "The Hopping Toad (Tavern)",
             "events": [
                 {
                     "shortdesc": "Local thieves rob the place",
                     "time_of_day": ["LateNight"],
-                    "rarity": "Uncommon"
+                    "rarity": 10,
+                    "longdesc": "A gang made up of the local underworld sneak into the place and snag any valuables in the dining room, kitchen and back office. They do not enter the rooms of any patrons nor do they bother very hard with taking everything available, they stick only to easily stolen items. If caught or confronted, they attempt to bolt and hide somewhere nearby."
                 },
                 {
                     "shortdesc": "Grumpy adventurers return from a hard day",
                     "time_of_day": ["EarlyNight", "Evening"],
-                    "rarity": "Uncommon"
+                    "rarity": 10,
+                    "longdesc": "A group of adventurers return, battered and bruised, from their latest foray into the world. They may have lost a member, expended too many resources for not enough gain, or otherwise been stymied or faced an obstacle. They are bitter and want only to drown themselves in their drink. If confronted or pressed for information, they will snap and be surly, but may provide something useful. If pressed too far, they are likely to hold a grudge, though they will not act on it within civilization, preferring instead to deal with it during a chance encounter in the wild."
+                },
+                {
+                    "shortdesc": "Local gang shakes down proprietor for protection money",
+                    "time_of_day": ["Morning", "EarlyDay", "MidNight"],
+                    "rarity": 10,
+                    "longdesc": "A few toughs from the local underworld visit the proprietor, likely after hours. This is likely to be a racket that has gone on for some time. The thugs act tough, but won't fight back if pushed, preferring instead to come back with the rest of their gang. If only confronted socially, they will insult their opponent and swagger out, certain to return later."
                 },
                 {
                     "shortdesc": "Guards walk by",
                     "time_of_day": ["Morning", "EarlyDay", "MidDay", "LateDay", "Evening", "EarlyNight", "MidNight", "LateNight"],
-                    "rarity": "Ordinary"
+                    "rarity": 40,
+                    "longdesc": "2 members of the local guard walk by, respectfully greeting anyone they see along the way. They will perform a cursory investigation of the surrounding locale, but they aren't stupid and won't fight anyone obviously beyond their league. Instead, one of them will retrieve reinforcements while the other tries to keep an eye on the situation. If any of the local underworld is around, they avoid the guards like the plague."
                 }
             ]
         }]
