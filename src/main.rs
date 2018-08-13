@@ -4,6 +4,7 @@ extern crate rand;
 extern crate serde;
 extern crate serde_json;
 extern crate clap;
+extern crate textwrap;
 
 #[macro_use]
 extern crate serde_derive;
@@ -14,6 +15,7 @@ use std::env;
 use std::fs::File;
 use rand::prelude::*;
 use clap::{Arg, App};
+use textwrap::fill;
 
 // Make a standardized way to handle times of the day. We care more about
 // what relative time-region of the day the event occurs in than the 
@@ -68,115 +70,12 @@ impl Timezone {
         }
     }
 
-}
-
-// Overwrite the default display function for Timezones so that we can print them
-impl fmt::Display for Timezone {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.string())
-    }
-}
-
-// Implement comparison functions for Timezone based on their associated values
-// so that events can be sorted by their relative timing during the day. We want
-// to sort our events so that we can output events chronologically, which is the only
-// sane way for the user to see the events happening over a day.
-impl Ord for Timezone {
-    fn cmp(&self, other: &Timezone) -> Ordering {
-        self.value().cmp(&other.value())
-    }
-}
-
-impl PartialOrd for Timezone {
-    fn partial_cmp(&self, other: &Timezone) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl PartialEq for Timezone {
-    fn eq(&self, other: &Timezone) -> bool {
-        self.value() == other.value()
-    }
-}
-
-// Make a struct to handle the structure of a read-in event from JSON.
-#[derive(Serialize, Deserialize, Debug, Eq)]
-struct Event {
-    shortdesc: String,          //  The name of the event, for practical purposes         
-    time_of_day: Vec<Timezone>, //  The relative time of the day for the event to occur.
-                                //  Support a vec of Timezones because events might have
-                                //  a range of times they occur.
-    rarity: i32                 //  An integer representing the event's chance to occur out
-                                //  of 100. Does not support values above 100.
-    
-}
-
-impl Event {
-    
-    // Function to return an Event's Timezone so that we can sort Events based on when they
-    // can occur during the day. Returns the first Timezone in the Event's time_of_day value
-    // so Events with large time ranges may seem sorted out of place.
-    pub fn get_time(&self) -> &Timezone {
-        &self.time_of_day[0]
-    }
-
-    // Function to return an Event's shortdesc, which we're using as its name
-    pub fn get_shortdesc(&self) -> &String {
-        &self.shortdesc
-    }
-
-    // Function to determine if an Event happens based on its rarity value. Returns
-    // a true or false bool value.
-    pub fn chance_happens(&self) -> &bool {
- 	    weighted_choice([&true, &false].to_vec(), [self.rarity, (100-self.rarity)].to_vec())
-    }
-
-    // Function to handle the determination of whether an Event happens given a Timezone.
-    // Used in conjunction with loops to iterate through a whole day and determine if any
-    // event occurs in each Timezone.
-    pub fn daygen(&self, giventime: Timezone) -> bool {
-        ((self.chance_happens() == &true) && (self.time_of_day.contains(&giventime)))
-    }
-}
-
-// Implement ordering and comparison functions for Event based on Timezone values
-// so that we can sort vectors of Events based on their relative chronological ordering
-// throughout the order.
-impl Ord for Event {
-    fn cmp(&self, other: &Event)-> Ordering {
-        self.time_of_day[0].cmp(&other.time_of_day[0])
-    }
-}
-
-impl PartialOrd for Event {
-    fn partial_cmp(&self, other: &Event) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl PartialEq for Event {
-    fn eq(&self, other: &Event) -> bool {
-        self.time_of_day[0] == other.time_of_day[0]
-    }
-}
-
-impl fmt::Display for Event {
+	fn clockvalue(&self) -> &str {
         
-    // Display function does not display strictly all the data
-    // in the object, just the pertinent data necessary for displaying
-    // it. Namely, it takes the timezone array that an event can occur
-    // in and expands it out to figure out exactly when the event 
-    // occurs in a 24-hr timeclock. This function is not normally used in
-    // running, but can be used for debugging purposes or for future features.
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        
-        let mut rng = thread_rng();
         let when;         
-        
-        // Figure out what hour of the day the event occurs based on its
-        // time-region. Mostly important for display purposes (which is
-        // why we're only figuring it out now!)
-        match self.time_of_day[rng.gen_range(0, self.time_of_day.len())] {
+		let mut rng = thread_rng();
+		
+		match *self {
             Timezone::Morning => {
                 let choice = rng.gen_range(1, 4);
                 match choice {
@@ -314,9 +213,113 @@ impl fmt::Display for Event {
                 }
             },
         }
+		when
+	}
+}
+
+// Overwrite the default display function for Timezones so that we can print them
+// Structure of function derived from official rust documentation on
+// implementing custom display functions for enums
+impl fmt::Display for Timezone {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.string())
+    }
+}
+
+// Implement comparison functions for Timezone based on their associated values
+// so that events can be sorted by their relative timing during the day. We want
+// to sort our events so that we can output events chronologically, which is the only
+// sane way for the user to see the events happening over a day.
+impl Ord for Timezone {
+    fn cmp(&self, other: &Timezone) -> Ordering {
+        self.value().cmp(&other.value())
+    }
+}
+
+impl PartialOrd for Timezone {
+    fn partial_cmp(&self, other: &Timezone) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for Timezone {
+    fn eq(&self, other: &Timezone) -> bool {
+        self.value() == other.value()
+    }
+}
+
+// Make a struct to handle the structure of a read-in event from JSON.
+#[derive(Serialize, Deserialize, Debug, Eq)]
+struct Event {
+    shortdesc: String,          //  The name of the event, for practical purposes         
+    time_of_day: Vec<Timezone>, //  The relative time of the day for the event to occur.
+                                //  Support a vec of Timezones because events might have
+                                //  a range of times they occur.
+    rarity: i32,                //  An integer representing the event's chance to occur out
+                                //  of 100. Does not support values above 100.
+	longdesc: String			//  The longer description of the event that describes in 
+								//  relative detail what occurs during this event. Only output
+                                //  if verbose flag is flipped. 
+    
+}
+
+impl Event {
+    
+    // Function to return an Event's Timezone so that we can sort Events based on when they
+    // can occur during the day. Returns the first Timezone in the Event's time_of_day value
+    // so Events with large time ranges may seem sorted out of place.
+    pub fn get_time(&self) -> &Timezone {
+        &self.time_of_day[0]
+    }
+
+    // Function to return an Event's shortdesc, which we're using as its name
+    pub fn get_shortdesc(&self) -> &String {
+        &self.shortdesc
+    }
+
+    // Function to determine if an Event happens based on its rarity value. Returns
+    // a true or false bool value.
+    pub fn chance_happens(&self) -> &bool {
+ 	    weighted_choice([&true, &false].to_vec(), [self.rarity, (100-self.rarity)].to_vec())
+    }
+
+    // Function to handle the determination of whether an Event happens given a Timezone.
+    // Used in conjunction with loops to iterate through a whole day and determine if any
+    // event occurs in each Timezone.
+    pub fn daygen(&self, giventime: Timezone) -> bool {
+        ((self.chance_happens() == &true) && (self.time_of_day.contains(&giventime)))
+    }
+}
+
+// Implement ordering and comparison functions for Event based on Timezone values
+// so that we can sort vectors of Events based on their relative chronological ordering
+// throughout the order.
+impl Ord for Event {
+    fn cmp(&self, other: &Event)-> Ordering {
+        self.time_of_day[0].cmp(&other.time_of_day[0])
+    }
+}
+
+impl PartialOrd for Event {
+    fn partial_cmp(&self, other: &Event) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for Event {
+    fn eq(&self, other: &Event) -> bool {
+        self.time_of_day[0] == other.time_of_day[0]
+    }
+}
+
+impl fmt::Display for Event {
+        
+	// Structure of function derived from official rust documentation on
+	// implementing custom display functions for enums
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         // Output the event in a formatted manner that makes it easy to
         // read for the user.
-	    write!(f, "[Event]    {}\n[When]    {}", self.shortdesc, when)
+	    write!(f, "[Event]    {}\n[When]    {:?}", self.shortdesc, self.time_of_day)
     }
 }
 
@@ -333,6 +336,8 @@ struct Landmark {
 impl fmt::Display for Landmark {
         
     // Function to print a Landmark enum in an easy to read format
+	// Structure of function derived from official rust documentation on
+	// implementing custom display functions for enums
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 
         // Start with the header and name
@@ -353,7 +358,7 @@ impl Landmark {
     // Function to determine the events occuring in regards to a Landmark given a Timezone
     // value. Used in conjunction with loops and City values to figure out which Events occur
     // on any given day.
-    pub fn daygen(&self, giventime: Timezone) {
+    pub fn daygen(&self, giventime: Timezone, verbose: bool) {
 
         // Check each Event
         for i in &self.events {
@@ -363,7 +368,11 @@ impl Landmark {
             
             // If the event is happening, print out the Event in a formmatted manner
             if chancehappens {
-                println!("  [{}] \t| [{}] \t| [{}]", giventime, self.name, i.shortdesc);
+				if verbose {
+					println!("Where:\t[{}]\nWhat:\t[{}]\nWhen:\t[{}]\n---\n{}\n", self.name, i.shortdesc, giventime.clockvalue(), fill(&i.longdesc, 80));
+				} else {
+					println!("[{}] \t| [{}] \t| [{}]", giventime.clockvalue(), self.name, i.shortdesc);
+				}
             }
         }
     }
@@ -372,7 +381,7 @@ impl Landmark {
 // Struct to hold a vec of Landmarks and a common name to hold the collection.
 // While the struct is called City, there isn't anything stopping the collection
 // being a region, some large temple, or any other collection of Landmarks. It doesn't
-// even have to be a collection, the name could even be "My Landmarks"
+// even have to be a collection, the name could even be just "My Landmarks"
 #[derive(Serialize, Deserialize, Debug)]
 struct City {
     name: String,
@@ -386,32 +395,33 @@ impl City {
     // day and check all of the Event objects contained in the city to determine
     // if they're occurring. The daygen functions in Event and Landmark will handle
     // all of the actual printing, so we only need to output the name of the City
-    // we're checking.
-    fn daygen(&self) {
+    // we're checking. We're taking the verbose command line argument and passing
+    // it down the line so we know how to output later on.
+    fn daygen(&self, verbose: bool) {
         println!("[{}]", self.name);
         for i in &self.landmarks {
-            i.daygen(Timezone::Morning);
+            i.daygen(Timezone::Morning, verbose);
         }
         for i in &self.landmarks {
-            i.daygen(Timezone::EarlyDay);
+            i.daygen(Timezone::EarlyDay, verbose);
         }
         for i in &self.landmarks {
-            i.daygen(Timezone::MidDay);
+            i.daygen(Timezone::MidDay, verbose);
         }
         for i in &self.landmarks {
-            i.daygen(Timezone::LateDay);
+            i.daygen(Timezone::LateDay, verbose);
         }
         for i in &self.landmarks {
-            i.daygen(Timezone::Evening);
+            i.daygen(Timezone::Evening, verbose);
         }
         for i in &self.landmarks {
-            i.daygen(Timezone::EarlyNight);
+            i.daygen(Timezone::EarlyNight, verbose);
         }
         for i in &self.landmarks {
-            i.daygen(Timezone::MidNight);
+            i.daygen(Timezone::MidNight, verbose);
         }
         for i in &self.landmarks {
-            i.daygen(Timezone::LateNight);
+            i.daygen(Timezone::LateNight, verbose);
         }
     }
 }
@@ -454,9 +464,6 @@ fn main() {
 	// so we need to create a relative path based off the source directory of metropogen	
 	let cargomanifestdir = env!("CARGO_MANIFEST_DIR");
 	env::set_current_dir(cargomanifestdir);
-
-	// For using the default file: "src/config.json" 
-    // we first need to figure out where our config file is
     let defaultconfigfile = "src/config.json";
     
 	// command line argument parsing structure derived from example in clap's crate documentation
@@ -472,19 +479,29 @@ fn main() {
                                .help("Identify input file if not using default")
                                .required(false)
 							   .takes_value(true))
-                          .arg(Arg::with_name("v")
+                          .arg(Arg::with_name("verbose")
                                .short("v")
+							   .long("verbose")
                                .help("Set verbose output to true"))
                           .get_matches();
 
+    // Use user's configuration file if they gave us one, otherwise use default
 	let configfile = matches.value_of("config").unwrap_or(&defaultconfigfile);
 
+    // Figure out if we're printing in verbose mode or not 
+	let mut verbose: bool = false;
+	if matches.is_present("verbose") {
+		verbose = true;
+	}
+
+    // Structure to read JSON object from file derived from serde documentation
+    // found on their github: https://github.com/serde-rs/serde
     // read in file in hopefully-good json format
     let file = File::open(configfile).unwrap();
 
     let json: City = serde_json::from_reader(file).unwrap();
 
     // process the read-in information
-    json.daygen();
+    json.daygen(verbose);
 
 }
