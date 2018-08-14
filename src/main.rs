@@ -1,3 +1,5 @@
+// Copyright Theodore Mason 2018
+// See LICENSE.md for information about licensing
 #![allow(dead_code)]
 #![allow(unused_must_use)]
 extern crate rand;
