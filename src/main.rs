@@ -373,7 +373,7 @@ impl Landmark {
 				if verbose {
 					println!("Where:\t[{}]\nWhat:\t[{}]\nWhen:\t[{}]\n---\n{}\n", self.name, i.shortdesc, giventime.clockvalue(), fill(&i.longdesc, 80));
 				} else {
-					println!("[{}] \t| [{}] \t| [{}]", giventime.clockvalue(), self.name, i.shortdesc);
+					println!("[{}]\t[{}]\t[{}]", giventime, self.name, i.shortdesc);
 				}
             }
         }

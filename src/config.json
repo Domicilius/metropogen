@@ -1,5 +1,5 @@
 {
-    "name": "Townsville",
+    "name": "City of Townsville",
     "landmarks": [
         {
             "name": "The Hopping Toad (Tavern)",
@@ -29,6 +29,59 @@
                     "longdesc": "2 members of the local guard walk by, respectfully greeting anyone they see along the way. They will perform a cursory investigation of the surrounding locale, but they aren't stupid and won't fight anyone obviously beyond their league. Instead, one of them will retrieve reinforcements while the other tries to keep an eye on the situation. If any of the local underworld is around, they avoid the guards like the plague."
                 }
             ]
-        }]
+        },
+        {
+            "name": "The Gleaming Spindle (Shop)",
+            "events": [
+                {
+                    "shortdesc": "Katrina visits the shop",
+                    "time_of_day": ["EarlyDay", "MidDay", "LateDay"],
+                    "rarity": 10,
+                    "longdesc": "Katrina, the mistress of the owner, comes and visits. She acts coy and flirty as long as the owner's wife is not also present."
+                },
+                {
+                    "shortdesc": "Wealthy customer closes shop for private shopping spree",
+                    "time_of_day": ["EarlyDay", "MidDay", "LateDay"],
+                    "rarity": 10,
+                    "longdesc": "A wealthy noble wishes to shop for new clothes without the crowds. They set up a private shopping session for themselves and their attendants with the owner of the shop. For all other customers, the shop is closed."
+                },
+                {
+                    "shortdesc": "Owner is sick, shop is closed",
+                    "time_of_day": ["Morning"],
+                    "rarity": 5,
+                    "longdesc": "The owner has a long-standing lung disease. Sometimes he is too sick to run his shop for the day and so closes up to rest."
+                },
+                {
+                    "shortdesc": "Guards walk by",
+                    "time_of_day": ["Morning", "EarlyDay", "MidDay", "LateDay", "Evening", "EarlyNight", "MidNight", "LateNight"],
+                    "rarity": 25,
+                    "longdesc": "2 members of the local guard walk by, respectfully greeting anyone they see along the way. They will perform a cursory investigation of the surrounding locale, but they aren't stupid and won't fight anyone obviously beyond their league. Instead, one of them will retrieve reinforcements while the other tries to keep an eye on the situation. If any of the local underworld is around, they avoid the guards like the plague."
+                }
+            ]
+        },
+        {
+            "name": "The North-East Guardhouse",
+            "events": [
+                {
+                    "shortdesc": "Local criminal brought in for misdemeanor",
+                    "time_of_day": ["EarlyDay", "MidDay", "LateDay", "Evening", "EarlyNight", "MidNight", "LateNight", "Morning"],
+                    "rarity": 10,
+                    "longdesc": "The guards bring in a local criminal, known for their idiocy and frequent criminal behavior, in on a misdemeanor. The perp can be heard loudly complaining even outside the precinct while being questioned and paperwork filled out. The perp is definitely guilty of the crime they are brought in for, but they may or may not be covering up for another greater crime."
+                },
+                {
+                    "shortdesc": "Guards have morning meeting",
+                    "time_of_day": ["Morning"],
+                    "rarity": 100,
+                    "longdesc": "All the guards not currently on duty have a morning meeting to discuss the local goings-on of the town and what they need to watch out for that day. The meeting is frequently catered by a local business, who use the opportunity to get a caterer into the room to eavesdrop on the news. The guards, being mostly upstanding and not needing to hide anything, let it happen."
+                },
+                {
+                    "shortdesc": "Violent suspect brought in",
+                    "time_of_day": ["Evening", "EarlyNight", "MidNight", "LateNight"],
+                    "rarity": 10,
+                    "longdesc": "A suspect is brought in on possible relation to a violent crime. The suspect is manacled and must be dragged to the interrogation room or to their cell. They fight back the whole way, kicking and dragging their fight and yelling. Possible escalations include accomplices trying to break them out or kill them before they can talk, the suspect getting muzzled by the guard or being clubbed into unconsciousness if they just don't give up."
+                }
+            ]
+        }
+    ]
 }
 
