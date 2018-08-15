@@ -1,5 +1,5 @@
-// Copyright Theodore Mason 2018
-// See LICENSE.md for information about licensing
+// Copyright (c) 2018 Theodore Mason
+// See LICENSE file for information about licensing
 #![allow(dead_code)]
 #![allow(unused_must_use)]
 extern crate rand;
@@ -72,6 +72,11 @@ impl Timezone {
         }
     }
 
+    // Return a clock value for the given Timezone
+    // Only used for the verbose printing of events, and not too
+    // fleshed out currently. Just makes a random time anywhere within
+    // the Timezone and has no concept of other events, so might
+    // print out of order during larger daygen function.
 	fn clockvalue(&self) -> &str {
         
         let when;         
