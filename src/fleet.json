@@ -1,0 +1,41 @@
+{
+    "name": "4th Fleet of Ealigar Imperial Navy",
+    "landmarks": [
+        {
+            "name": "EIN Sucker Punch",
+            "events": [
+                {
+                    "shortdesc": "Crew shift changes",
+                    "time_of_day": ["Morning", "Evening"],
+                    "rarity": 100,
+                    "longdesc": "The portion of the crew that are performing active duties swap with the crew currently resting or in leisure. Shift change is usually prompted by a loud piercing steam whistle from the bridge. Each of the oncoming crew teams performs initial maintenance and checks to ensure their area is secure and functioning correctly, then sends a member to provide a report to the bridge."
+                },
+                {
+                    "shortdesc": "Ship leaves formation to pursue enemy",
+                    "time_of_day": ["Morning", "EarlyDay", "MidDay", "LateDay", "Evening", "EarlyNight", "MidNight", "LateNight"],
+                    "rarity": 10,
+                    "longdesc": "EIN Sucker Punch is a pursuit-class destroyer and is usually assigned to patrol at the vanguard of the fleet. As such, they frequently are the first to spot any enemy ships out in front of the formation. The ship is frequently given its lead to pursue within reason, and the crew of the Sucker Punch take advantage of this fact."
+                }
+
+            ]
+        },
+        {
+            "name": "EIN Shining Eagle",
+            "events": [
+                {
+                    "shortdesc": "Crew shift changes",
+                    "time_of_day": ["Morning", "Evening"],
+                    "rarity": 100,
+                    "longdesc": "The portion of the crew that are performing active duties swap with the crew currently resting or in leisure. Shift change is usually prompted by a loud piercing steam whistle from the bridge. Each of the oncoming crew teams performs initial maintenance and checks to ensure their area is secure and functioning correctly, then sends a member to provide a report to the bridge."
+                },
+                {
+                    "shortdesc": "Admiral calls for meeting",
+                    "time_of_day": ["Morning"],
+                    "rarity": 20,
+                    "longdesc": "Admiral Willoughby calls for a meeting with all of her captains aboard her flagship, the Shining Eagle. The captains of 4th fleet travel from their own ships in ship's boats and have an early morning meeting with her to discuss tactics, provide up-to-date maintenance reports, and share news and information gathered from their radios. Typically, Admiral Willoughby makes some course corrections and some minor standing order changes, though this is also a time when she'd announce a major change in strategy or some dire news from the homefront."
+                }
+            ]
+        }
+    ]
+}
+

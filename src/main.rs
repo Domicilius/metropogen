@@ -493,7 +493,7 @@ fn main() {
                           .get_matches();
 
     // Use user's configuration file if they gave us one, otherwise use default
-	let configfile = matches.value_of("config").unwrap_or(&defaultconfigfile);
+	let configfile = matches.value_of("INPUT").unwrap_or(&defaultconfigfile);
 
     // Figure out if we're printing in verbose mode or not 
 	let mut verbose: bool = false;
