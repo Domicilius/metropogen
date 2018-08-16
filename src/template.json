@@ -1,0 +1,17 @@
+{
+    "name": "Name of the set",
+    "landmarks": [
+        {
+            "name": "Name of the first item in the set",
+            "events": [
+                {
+                    "shortdesc": "The first event associated with this item",
+                    "time_of_day": ["Morning", "EarlyDay", "MidDay", "LateDay", "Evening", "EarlyNight", "MidNight", "LateNight"],
+                    "rarity": 5,
+                    "longdesc": "The longer description of the event, typically 1-4 sentences."
+
+                }
+            ]
+        }
+    ]
+}
